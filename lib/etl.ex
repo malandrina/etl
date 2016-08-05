@@ -3,10 +3,10 @@ defmodule Etl do
 
   def main(_argv) do
     {:ok, sql_server_pid} = Tds.Connection.start_link(
-      hostname: "hostname",
-      username: "username",
-      password: "password",
-      database: "database",
+      hostname: Application.get_env(:etl, :source_hostname),
+      username: Application.get_env(:etl, :source_username),
+      password: Application.get_env(:etl, :source_password),
+      database: Application.get_env(:etl, :source_database),
     )
     {:ok, sql_server_result} = Tds.Connection.query(
       sql_server_pid,
@@ -55,8 +55,8 @@ defmodule Etl do
     )
 
     {:ok, postgrex_pid} = Postgrex.start_link(
-      hostname: "hostname",
-      database: "database",
+      hostname: Application.get_env(:etl, :destination_hostname),
+      database: Application.get_env(:etl, :destination_database),
     )
 
     Enum.each sql_server_result.rows, fn row ->
